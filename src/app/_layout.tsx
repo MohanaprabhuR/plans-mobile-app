@@ -1,16 +1,29 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import React from 'react';
-import { useColorScheme } from 'react-native';
+import { Stack } from "expo-router";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
+export const unstable_settings = {
+  initialRouteName: "index",
+};
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+export default function RootLayout() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: "#F8F7F3" }}>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="get-started" />
+        <Stack.Screen name="login" />
+        <Stack.Screen name="verify-otp" />
+        <Stack.Screen name="new-account" />
+        <Stack.Screen name="profile" />
+        <Stack.Screen name="welcome" />
+        <Stack.Screen name="risk-screen" />
+        <Stack.Screen name="risk-category" />
+        <Stack.Screen name="reset-password" />
+        <Stack.Screen name="star-assessment" />
+        <Stack.Screen name="risk-loading-screen" />
+        <Stack.Screen name="questionnaire" />
+        <Stack.Screen name="(tabs)" />
+      </Stack>
+    </GestureHandlerRootView>
   );
 }
