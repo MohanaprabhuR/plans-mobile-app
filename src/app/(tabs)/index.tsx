@@ -12,13 +12,13 @@ import {
   Text,
   View,
 } from "react-native";
-import Carousel, { ICarouselInstance } from "react-native-reanimated-carousel";
+import Carousel, { TAnimationStyle } from "react-native-reanimated-carousel";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CONTENT_PADDING = 16;
 const PAGINATION_WIDTH = 14;
 const SLIDE_GAP = 8;
-const CARD_WIDTH = SCREEN_WIDTH - CONTENT_PADDING * 2 - PAGINATION_WIDTH - 8;
+const CARD_WIDTH = SCREEN_WIDTH - CONTENT_PADDING * 1 - PAGINATION_WIDTH - 8;
 const CARD_HEIGHT = 190;
 const ACTIONS_HEIGHT = 88;
 const SLIDE_HEIGHT = CARD_HEIGHT + 16 + ACTIONS_HEIGHT;
@@ -34,7 +34,7 @@ function PolicySlide({ item }: { item: (typeof activePolicyCards)[number] }) {
             style={styles.actionButton}
             onPress={() => router.push(action.href)}
           >
-            <Feather name={action.icon} size={22} color="#383838" />
+            <Feather name={action.icon} size={20} color="#383838" />
             <Text style={styles.actionLabel}>{action.label}</Text>
           </Pressable>
         ))}
@@ -45,7 +45,7 @@ function PolicySlide({ item }: { item: (typeof activePolicyCards)[number] }) {
 
 export default function HomeScreen() {
   const [activeIndex, setActiveIndex] = useState(0);
-  const carouselRef = useRef<ICarouselInstance>(null);
+  const carouselRef = useRef<TAnimationStyle>(null);
 
   const goToSlide = (index: number) => {
     carouselRef.current?.scrollTo({ index, animated: true });
@@ -88,7 +88,7 @@ export default function HomeScreen() {
             width={CARD_WIDTH}
             height={SLIDE_HEIGHT}
             data={activePolicyCards}
-            loop={false}
+            loop={true}
             onSnapToItem={setActiveIndex}
             renderItem={({ item }) => <PolicySlide item={item} />}
           />
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
   sliderRow: {
     flexDirection: "row",
     alignItems: "flex-start",
-    gap: 8,
+    gap: 0,
   },
   slide: {
     width: CARD_WIDTH,
@@ -222,23 +222,26 @@ const styles = StyleSheet.create({
   },
   actionsRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 12,
+    justifyContent: "center",
+    gap: 16,
   },
   actionButton: {
-    flex: 1,
     backgroundColor: "#FFFFFF",
     borderRadius: 16,
-    paddingVertical: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
+    gap: 4,
     boxShadow: "0px 2px 4px 0px rgba(56, 56, 56, 0.08)",
+    width: 68,
+    height: 64,
   },
   actionLabel: {
-    fontSize: 13,
-    lineHeight: 20,
+    fontSize: 12,
+    lineHeight: 16,
     fontWeight: "500",
     color: "#383838",
+    letterSpacing: -0.1,
   },
 });
