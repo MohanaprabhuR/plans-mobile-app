@@ -13,7 +13,7 @@ import Button from "@/components/Button";
 import LeftArrowIcon from "@/components/icons/LeftArrowIcon";
 import ScreenLayout from "@/components/ScreenLayout";
 import { useEffect, useRef, useState } from "react";
-const PlaceholderImage = require("@/assets/images/plans-logo.png");
+const PlaceholderImage = require("../../../assets/images/plans-logo.png");
 
 export default function GetStarted() {
   const fadeAnim = useRef(new Animated.Value(0)).current;

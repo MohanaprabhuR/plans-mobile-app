@@ -1,0 +1,5 @@
+{
+  "components": "src/components/ui",
+  "entry": "src/app/_layout.tsx",
+  "css": "global.css"
+}

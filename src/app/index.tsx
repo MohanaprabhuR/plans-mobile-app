@@ -6,7 +6,7 @@ import Button from "@/components/Button";
 import ScreenLayout from "@/components/ScreenLayout";
 import { router } from "expo-router";
 
-const PlaceholderImage = require("@/assets/images/welcome-image.png");
+const PlaceholderImage = require("../../assets/images/welcome-image.png");
 
 export default function WelcomeScreen() {
   const fadeAnim = useRef(new Animated.Value(0)).current;

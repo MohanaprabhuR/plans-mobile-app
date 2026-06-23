@@ -1,12 +1,12 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text } from "react-native";
 
 import ScreenLayout from "@/components/ScreenLayout";
 
-export default function PoliciesScreen() {
+export default function PolicyScreen() {
   return (
     <ScreenLayout contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Policies</Text>
-      <Text style={styles.subtitle}>Your policies will appear here.</Text>
+      <Text style={styles.title}>Policy</Text>
+      <Text style={styles.subtitle}>Your policy details will appear here.</Text>
     </ScreenLayout>
   );
 }

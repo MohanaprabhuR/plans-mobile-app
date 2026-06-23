@@ -3,7 +3,7 @@ import LeftArrowIcon from "@/components/icons/LeftArrowIcon";
 import ScreenLayout from "@/components/ScreenLayout";
 import { router } from "expo-router";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-const successImage = require("@/assets/images/success.png");
+const successImage = require("../../../assets/images/success.png");
 
 const profileAccount = () => {
   return (
