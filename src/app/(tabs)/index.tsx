@@ -1,7 +1,13 @@
+import HospitalBottomSheet from "@/components/HospitalBottomSheet";
 import PolicyCard from "@/components/PolicyCard";
 import ScreenLayout from "@/components/ScreenLayout";
+import {
+  blacklistedHospitals,
+  networkHospitals,
+} from "@/constants/hospitalData";
 import { activePolicyCards } from "@/constants/policyData";
 import { Feather } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useRef, useState } from "react";
 import {
@@ -12,7 +18,7 @@ import {
   Text,
   View,
 } from "react-native";
-import Carousel, { TAnimationStyle } from "react-native-reanimated-carousel";
+import Carousel, { ICarouselInstance } from "react-native-reanimated-carousel";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CONTENT_PADDING = 16;
@@ -45,7 +51,10 @@ function PolicySlide({ item }: { item: (typeof activePolicyCards)[number] }) {
 
 export default function HomeScreen() {
   const [activeIndex, setActiveIndex] = useState(0);
-  const carouselRef = useRef<TAnimationStyle>(null);
+  const [hospitalSheet, setHospitalSheet] = useState<
+    "network" | "blacklisted" | null
+  >(null);
+  const carouselRef = useRef<ICarouselInstance>(null);
 
   const goToSlide = (index: number) => {
     carouselRef.current?.scrollTo({ index, animated: true });
@@ -109,6 +118,66 @@ export default function HomeScreen() {
           </View>
         </View>
       </View>
+      <View style={styles.riskCardPressable}>
+        <LinearGradient
+          colors={["#383838", "#707070"]}
+          locations={[0.15, 0.65]}
+          start={{ x: 0, y: 0.5 }}
+          end={{ x: 1, y: 0.5 }}
+          style={styles.riskCard}
+        >
+          <View style={styles.riskScoreBadge}>
+            <Text style={styles.riskScoreText}>35</Text>
+          </View>
+          <View style={styles.riskTextWrap}>
+            <Text style={styles.riskTitle}>Risk Overview</Text>
+            <Text style={styles.riskSubtitle}>Medium</Text>
+          </View>
+          <Feather name="arrow-right" size={20} color="#FFFFFF" />
+        </LinearGradient>
+      </View>
+      <View style={styles.quickActionsSection}>
+        <Text style={styles.quickActionsTitle}>Quick Actions</Text>
+        <View style={styles.quickActionsCard}>
+          <Pressable
+            style={styles.quickActionsCardItem}
+            onPress={() => setHospitalSheet("network")}
+          >
+            <Feather name="plus-circle" size={24} color="#383838" />
+            <Text style={styles.quickActionsCardItemTitle}>
+              Network Hospitals
+            </Text>
+          </Pressable>
+          <Pressable
+            style={styles.quickActionsCardItem}
+            onPress={() => setHospitalSheet("blacklisted")}
+          >
+            <Feather name="minus-circle" size={24} color="#383838" />
+            <Text style={styles.quickActionsCardItemTitle}>
+              Blacklisted Hospitals
+            </Text>
+          </Pressable>
+          <Pressable style={styles.quickActionsCardItem}>
+            <Feather name="message-square" size={24} color="#383838" />
+            <Text style={styles.quickActionsCardItemTitle}>
+              AI Policy Assistant
+            </Text>
+          </Pressable>
+        </View>
+      </View>
+
+      <HospitalBottomSheet
+        visible={hospitalSheet === "network"}
+        title="Network Hospitals"
+        hospitals={networkHospitals}
+        onClose={() => setHospitalSheet(null)}
+      />
+      <HospitalBottomSheet
+        visible={hospitalSheet === "blacklisted"}
+        title="Blacklisted Hospitals"
+        hospitals={blacklistedHospitals}
+        onClose={() => setHospitalSheet(null)}
+      />
     </ScreenLayout>
   );
 }
@@ -243,5 +312,87 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#383838",
     letterSpacing: -0.1,
+  },
+  riskCardPressable: {
+    marginTop: 32,
+    borderRadius: 20,
+    overflow: "hidden",
+  },
+  riskCard: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    paddingHorizontal: 16,
+    paddingTop: 20,
+    paddingBottom: 82,
+  },
+  riskScoreBadge: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: "rgba(255, 255, 255, 0.18)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  riskScoreText: {
+    fontSize: 15,
+    lineHeight: 24,
+    fontWeight: "700",
+    color: "#FFFFFF",
+  },
+  riskTextWrap: {
+    flex: 1,
+    gap: 2,
+  },
+  riskTitle: {
+    fontSize: 15,
+    lineHeight: 24,
+    fontWeight: "700",
+    color: "#FFFFFF",
+  },
+  riskSubtitle: {
+    fontSize: 13,
+    lineHeight: 16,
+    fontWeight: "400",
+    color: "rgba(255, 255, 255, 0.75)",
+  },
+  quickActionsSection: {
+    paddingHorizontal: 16,
+    paddingVertical: 24,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 32,
+    marginTop: -62,
+  },
+  quickActionsTitle: {
+    fontSize: 15,
+    lineHeight: 24,
+    fontWeight: "700",
+    color: "#383838",
+  },
+  quickActionsCard: {
+    flexDirection: "row",
+    marginTop: 16,
+    gap: 10,
+  },
+  quickActionsCardItem: {
+    width: 101,
+    height: 96,
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#EDEDED",
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 22,
+    gap: 8,
+  },
+  quickActionsCardItemTitle: {
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: "500",
+    color: "#383838",
+    textAlign: "center",
   },
 });
