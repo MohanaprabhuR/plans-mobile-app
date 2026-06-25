@@ -3,6 +3,8 @@ export type Hospital = {
   name: string;
   city: string;
   state: string;
+  address: string;
+  phone: string;
   rating: number;
   distance: number;
 };
@@ -45,17 +47,37 @@ const cities = [
   "Clear Lake",
 ];
 
-function buildHospitals(prefix: string): Hospital[] {
-  return hospitalNames.map((name, index) => ({
-    id: `${prefix}-${index + 1}`,
-    name,
-    city: cities[index % cities.length],
-    state: "TX",
-    rating: Number((4.9 - index * 0.02).toFixed(1)),
-    distance: Number((2.5 + index * 0.4).toFixed(1)),
-  }));
+const streets = [
+  "Fannin Street",
+  "Main Street",
+  "Westheimer Road",
+  "Richmond Avenue",
+  "Kirby Drive",
+  "Bissonnet Street",
+  "Memorial Drive",
+  "Bellaire Boulevard",
+];
+
+function buildHospitals(prefix: string, count: number): Hospital[] {
+  return Array.from({ length: count }, (_, index) => {
+    const name = hospitalNames[index % hospitalNames.length];
+    const city = cities[index % cities.length];
+    const street = streets[index % streets.length];
+    const streetNumber = 1200 + index * 37;
+
+    return {
+      id: `${prefix}-${index + 1}`,
+      name: index < hospitalNames.length ? name : `${name} ${Math.floor(index / hospitalNames.length) + 1}`,
+      city,
+      state: "TX",
+      address: `${streetNumber} ${street}, ${city}, TX ${77000 + (index % 900)}`,
+      phone: `(713) ${String(200 + (index % 800)).padStart(3, "0")}-${String(1000 + index).slice(-4)}`,
+      rating: Number(Math.max(1, 5 - (index % 5) * 0.8 + (index % 3) * 0.1).toFixed(1)),
+      distance: Number((2.5 + (index % 24) * 3.8).toFixed(1)),
+    };
+  });
 }
 
-export const networkHospitals = buildHospitals("network");
+export const networkHospitals = buildHospitals("network", 80);
 
-export const blacklistedHospitals = buildHospitals("blocked");
+export const blacklistedHospitals = buildHospitals("blocked", 60);

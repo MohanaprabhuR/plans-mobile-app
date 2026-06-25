@@ -1,10 +1,8 @@
-import HospitalBottomSheet from "@/components/HospitalBottomSheet";
+import ClaimCard from "@/components/ClaimCard";
 import PolicyCard from "@/components/PolicyCard";
 import ScreenLayout from "@/components/ScreenLayout";
-import {
-  blacklistedHospitals,
-  networkHospitals,
-} from "@/constants/hospitalData";
+import { getCategoryColor } from "@/constants/categoryColors";
+import { premiumOverview, recentClaims } from "@/constants/dashboardData";
 import { activePolicyCards } from "@/constants/policyData";
 import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -51,9 +49,6 @@ function PolicySlide({ item }: { item: (typeof activePolicyCards)[number] }) {
 
 export default function HomeScreen() {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [hospitalSheet, setHospitalSheet] = useState<
-    "network" | "blacklisted" | null
-  >(null);
   const carouselRef = useRef<ICarouselInstance>(null);
 
   const goToSlide = (index: number) => {
@@ -141,7 +136,7 @@ export default function HomeScreen() {
         <View style={styles.quickActionsCard}>
           <Pressable
             style={styles.quickActionsCardItem}
-            onPress={() => setHospitalSheet("network")}
+            onPress={() => router.push("/network-hospitals")}
           >
             <Feather name="plus-circle" size={24} color="#383838" />
             <Text style={styles.quickActionsCardItemTitle}>
@@ -150,7 +145,7 @@ export default function HomeScreen() {
           </Pressable>
           <Pressable
             style={styles.quickActionsCardItem}
-            onPress={() => setHospitalSheet("blacklisted")}
+            onPress={() => router.push("/blacklisted-hospitals")}
           >
             <Feather name="minus-circle" size={24} color="#383838" />
             <Text style={styles.quickActionsCardItemTitle}>
@@ -166,18 +161,56 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      <HospitalBottomSheet
-        visible={hospitalSheet === "network"}
-        title="Network Hospitals"
-        hospitals={networkHospitals}
-        onClose={() => setHospitalSheet(null)}
-      />
-      <HospitalBottomSheet
-        visible={hospitalSheet === "blacklisted"}
-        title="Blacklisted Hospitals"
-        hospitals={blacklistedHospitals}
-        onClose={() => setHospitalSheet(null)}
-      />
+      <View style={styles.premiumSection}>
+        <Text style={styles.sectionTitle}>Premium Overview</Text>
+        <View style={styles.premiumCard}>
+          <View style={styles.premiumHeader}>
+            <View>
+              <Text style={styles.premiumLabel}>Total Yearly Premium</Text>
+              <Text style={styles.premiumTotal}>
+                ${premiumOverview.totalYearlyPremium.toLocaleString()}
+              </Text>
+            </View>
+            <View style={styles.premiumShield}>
+              <Feather name="shield" size={22} color="#FF5E00" />
+            </View>
+          </View>
+
+          <View style={styles.premiumDivider} />
+
+          {premiumOverview.categories.map((row) => (
+            <View key={row.category} style={styles.premiumRow}>
+              <View
+                style={[
+                  styles.premiumIconWrap,
+                  { backgroundColor: getCategoryColor(row.category) },
+                ]}
+              >
+                <Image
+                  source={row.icon}
+                  style={styles.premiumIcon}
+                  resizeMode="contain"
+                />
+              </View>
+              <Text style={styles.premiumRowLabel}>
+                {row.label} ({row.count})
+              </Text>
+              <Text style={styles.premiumRowValue}>
+                ${row.yearlyPremium.toLocaleString()}/Year
+              </Text>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      <View style={styles.claimsSection}>
+        <Text style={styles.sectionTitle}>Claims</Text>
+        <View style={styles.claimsList}>
+          {recentClaims.map((claim) => (
+            <ClaimCard key={claim.id} item={claim} />
+          ))}
+        </View>
+      </View>
     </ScreenLayout>
   );
 }
@@ -314,7 +347,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.1,
   },
   riskCardPressable: {
-    marginTop: 32,
+    marginTop: 16,
     borderRadius: 20,
     overflow: "hidden",
   },
@@ -394,5 +427,89 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#383838",
     textAlign: "center",
+  },
+  premiumSection: {
+    marginTop: 16,
+    gap: 16,
+  },
+  sectionTitle: {
+    fontSize: 15,
+    lineHeight: 24,
+    fontWeight: "700",
+    color: "#383838",
+  },
+  premiumCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 32,
+    paddingHorizontal: 16,
+    paddingVertical: 20,
+  },
+  premiumHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  premiumLabel: {
+    fontSize: 13,
+    lineHeight: 16,
+    fontWeight: "500",
+    color: "#757575",
+  },
+  premiumTotal: {
+    fontSize: 28,
+    lineHeight: 36,
+    fontWeight: "700",
+    color: "#383838",
+    marginTop: 4,
+  },
+  premiumShield: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: "#FFF4EC",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  premiumDivider: {
+    height: 1,
+    backgroundColor: "#EDEDED",
+    marginVertical: 16,
+  },
+  premiumRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    paddingVertical: 8,
+  },
+  premiumIconWrap: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  premiumIcon: {
+    width: 18,
+    height: 18,
+  },
+  premiumRowLabel: {
+    flex: 1,
+    fontSize: 15,
+    lineHeight: 24,
+    fontWeight: "500",
+    color: "#383838",
+  },
+  premiumRowValue: {
+    fontSize: 13,
+    lineHeight: 20,
+    fontWeight: "500",
+    color: "#383838",
+  },
+  claimsSection: {
+    marginTop: 24,
+    gap: 16,
+  },
+  claimsList: {
+    gap: 12,
   },
 });

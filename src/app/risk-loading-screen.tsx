@@ -16,7 +16,7 @@ export default function RiskLoadingScreen() {
     ).start();
 
     const timer = setTimeout(() => {
-      router.replace("/start-assement");
+      router.replace("/start-assessment");
     }, 1000);
 
     return () => clearTimeout(timer);
