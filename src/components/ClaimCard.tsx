@@ -1,7 +1,7 @@
 import { Image, StyleSheet, Text, View } from "react-native";
 
 import { getCategoryColor } from "@/constants/categoryColors";
-import { ClaimCardData } from "@/constants/dashboardData";
+import { ClaimCardData, claimStatusColors } from "@/constants/dashboardData";
 
 type ClaimCardProps = {
   item: ClaimCardData;
@@ -21,7 +21,10 @@ export default function ClaimCard({ item }: ClaimCardProps) {
     <View style={styles.card}>
       <View style={styles.content}>
         <View
-          style={[styles.logoWrap, { backgroundColor: item.logoBackgroundColor }]}
+          style={[
+            styles.logoWrap,
+            { backgroundColor: item.logoBackgroundColor },
+          ]}
         >
           <Image source={item.logo} style={styles.logo} resizeMode="contain" />
         </View>
@@ -38,9 +41,13 @@ export default function ClaimCard({ item }: ClaimCardProps) {
         <Text style={styles.amount}>${item.amount}</Text>
       </View>
 
-      <View style={[styles.footer, { backgroundColor: footerColor }]}>
+      <View style={styles.footer}>
         <Text style={styles.footerText}>{item.date}</Text>
-        <Text style={styles.footerText}>{item.status}</Text>
+        <Text
+          style={[styles.footerText, { color: claimStatusColors[item.status] }]}
+        >
+          {item.status}
+        </Text>
       </View>
     </View>
   );
@@ -49,7 +56,7 @@ export default function ClaimCard({ item }: ClaimCardProps) {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 24,
+    borderRadius: 32,
     overflow: "hidden",
   },
   content: {
@@ -60,15 +67,15 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   logoWrap: {
-    width: 44,
-    height: 44,
+    width: 40,
+    height: 40,
     borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
   },
   logo: {
-    width: 28,
-    height: 28,
+    width: 40,
+    height: 40,
   },
   info: {
     flex: 1,
@@ -78,31 +85,33 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 16,
     fontWeight: "500",
-    color: "#757575",
+    color: "#555555",
   },
   title: {
     fontSize: 15,
     lineHeight: 20,
-    fontWeight: "700",
+    fontWeight: "600",
     color: "#383838",
   },
   amount: {
-    fontSize: 18,
-    lineHeight: 24,
-    fontWeight: "700",
+    fontSize: 21,
+    lineHeight: 32,
+    fontWeight: "600",
     color: "#383838",
+    letterSpacing: -0.5,
   },
   footer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingVertical: 8,
+    backgroundColor: "#FFFAE5",
   },
   footerText: {
     fontSize: 13,
     lineHeight: 16,
     fontWeight: "500",
-    color: "#C97B2B",
+    color: "#555555",
   },
 });

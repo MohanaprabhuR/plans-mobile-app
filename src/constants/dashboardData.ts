@@ -6,8 +6,8 @@ const healthIcon = require("../../assets/images/health-icon.png");
 const autoIcon = require("../../assets/images/auto-icon.png");
 const homeIcon = require("../../assets/images/home-icon.png");
 const lifeIcon = require("../../assets/images/life-icon.png");
-const careLogo = require("../../assets/images/care-logo.png");
-const autoLogo = require("../../assets/images/sa-auto.png");
+const healthLogo = require("../../assets/images/insurance-health.png");
+const autoLogo = require("../../assets/images/insurance-auto.png");
 
 export type PremiumCategoryRow = {
   category: PolicyCategory;
@@ -51,7 +51,13 @@ export const premiumOverview = {
   ] satisfies PremiumCategoryRow[],
 };
 
-export type ClaimStatus = "Pending" | "Approved" | "Rejected";
+export type ClaimStatus = "Pending" | "Success" | "Expired";
+
+export const claimStatusColors: Record<ClaimStatus, string> = {
+  Pending: "#BF7400",
+  Success: "#16A34A",
+  Expired: "#DC2626",
+};
 
 export type ClaimCardData = {
   id: string;
@@ -74,7 +80,7 @@ export const recentClaims: ClaimCardData[] = [
     amount: 250,
     date: "12 Oct",
     status: "Pending",
-    logo: careLogo,
+    logo: healthLogo,
     logoBackgroundColor: "#2DBCB0",
   },
   {
@@ -84,7 +90,7 @@ export const recentClaims: ClaimCardData[] = [
     title: "Accidental Damage Repair",
     amount: 120,
     date: "08 Oct",
-    status: "Pending",
+    status: "Success",
     logo: autoLogo,
     logoBackgroundColor: "#1E3A5F",
   },

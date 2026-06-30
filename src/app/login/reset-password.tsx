@@ -12,7 +12,7 @@ import {
 } from "react-native";
 
 import Button from "@/components/Button";
-import LeftArrowIcon from "@/components/icons/LeftArrowIcon";
+import BackButton from "@/components/BackButton";
 import ScreenLayout from "@/components/ScreenLayout";
 
 type Step = "email" | "otp" | "password";
@@ -84,13 +84,7 @@ export default function LoginScreen() {
   return (
     <ScreenLayout>
       <View style={styles.backButtonContainer}>
-        <Pressable
-          style={styles.backButton}
-          onPress={() => router.back()}
-          accessibilityLabel="Go back"
-        >
-          <LeftArrowIcon color="#383838" />
-        </Pressable>
+        <BackButton onPress={() => router.back()} />
       </View>
 
       <View style={styles.container}>
@@ -224,23 +218,6 @@ const styles = StyleSheet.create({
   backButtonContainer: {
     paddingVertical: 8,
     paddingHorizontal: 16,
-  },
-
-  backButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 20,
-    backgroundColor: "#FFFFFF",
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#383838",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
   },
 
   title: {

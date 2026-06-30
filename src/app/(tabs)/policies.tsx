@@ -1,10 +1,11 @@
 import { StyleSheet, Text } from "react-native";
 
 import ScreenLayout from "@/components/ScreenLayout";
+import { TAB_SCREEN_EDGES } from "@/constants/tabScreen";
 
 export default function PolicyScreen() {
   return (
-    <ScreenLayout contentContainerStyle={styles.container}>
+    <ScreenLayout contentContainerStyle={styles.container} edges={TAB_SCREEN_EDGES}>
       <Text style={styles.title}>Policy</Text>
       <Text style={styles.subtitle}>Your policy details will appear here.</Text>
     </ScreenLayout>

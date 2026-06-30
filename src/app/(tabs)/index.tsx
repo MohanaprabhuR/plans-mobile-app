@@ -4,6 +4,7 @@ import ScreenLayout from "@/components/ScreenLayout";
 import { getCategoryColor } from "@/constants/categoryColors";
 import { premiumOverview, recentClaims } from "@/constants/dashboardData";
 import { activePolicyCards } from "@/constants/policyData";
+import { TAB_SCREEN_EDGES } from "@/constants/tabScreen";
 import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
@@ -57,7 +58,11 @@ export default function HomeScreen() {
   };
 
   return (
-    <ScreenLayout style={styles.screen} contentContainerStyle={styles.content}>
+    <ScreenLayout
+      style={styles.screen}
+      contentContainerStyle={styles.content}
+      edges={TAB_SCREEN_EDGES}
+    >
       <View style={styles.header}>
         <View style={styles.profileRow}>
           <View style={styles.avatar}>
@@ -222,7 +227,8 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: CONTENT_PADDING,
-    paddingBottom: 24,
+    paddingBottom: 16,
+    flexGrow: 0,
   },
   header: {
     flexDirection: "row",
@@ -429,13 +435,14 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   premiumSection: {
-    marginTop: 16,
+    marginTop: 32,
     gap: 16,
   },
   sectionTitle: {
-    fontSize: 15,
+    fontSize: 18,
     lineHeight: 24,
-    fontWeight: "700",
+    letterSpacing: -0.5,
+    fontWeight: "500",
     color: "#383838",
   },
   premiumCard: {
@@ -450,21 +457,22 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   premiumLabel: {
-    fontSize: 13,
-    lineHeight: 16,
+    fontSize: 15,
+    lineHeight: 20,
     fontWeight: "500",
-    color: "#757575",
+    color: "#383838",
   },
   premiumTotal: {
-    fontSize: 28,
-    lineHeight: 36,
-    fontWeight: "700",
+    fontSize: 18,
+    lineHeight: 20,
+    fontWeight: "500",
     color: "#383838",
-    marginTop: 4,
+    marginTop: 8,
+    letterSpacing: -0.5,
   },
   premiumShield: {
-    width: 44,
-    height: 44,
+    width: 48,
+    height: 48,
     borderRadius: 22,
     backgroundColor: "#FFF4EC",
     alignItems: "center",
@@ -472,25 +480,25 @@ const styles = StyleSheet.create({
   },
   premiumDivider: {
     height: 1,
-    backgroundColor: "#EDEDED",
-    marginVertical: 16,
+    backgroundColor: "#F0F0F0",
+    marginVertical: 12,
   },
   premiumRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: 8,
     paddingVertical: 8,
   },
   premiumIconWrap: {
-    width: 36,
-    height: 36,
+    width: 40,
+    height: 40,
     borderRadius: 18,
     alignItems: "center",
     justifyContent: "center",
   },
   premiumIcon: {
-    width: 18,
-    height: 18,
+    width: 16,
+    height: 16,
   },
   premiumRowLabel: {
     flex: 1,
@@ -506,10 +514,10 @@ const styles = StyleSheet.create({
     color: "#383838",
   },
   claimsSection: {
-    marginTop: 24,
+    marginTop: 32,
     gap: 16,
   },
   claimsList: {
-    gap: 12,
+    gap: 16,
   },
 });

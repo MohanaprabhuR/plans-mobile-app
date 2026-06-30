@@ -1,6 +1,6 @@
+import BackButton from "@/components/BackButton";
 import HospitalCard from "@/components/HospitalCard";
 import HospitalFilterSheet from "@/components/HospitalFilterSheet";
-import LeftArrowIcon from "@/components/icons/LeftArrowIcon";
 import { Hospital } from "@/constants/hospitalData";
 import {
   HospitalFilters,
@@ -33,7 +33,9 @@ export default function HospitalListScreen({
   regionLabel = "Texas",
 }: HospitalListScreenProps) {
   const [search, setSearch] = useState("");
-  const [filters, setFilters] = useState<HospitalFilters>(defaultHospitalFilters);
+  const [filters, setFilters] = useState<HospitalFilters>(
+    defaultHospitalFilters,
+  );
   const [filterSheetVisible, setFilterSheetVisible] = useState(false);
 
   const filteredHospitals = useMemo(
@@ -47,13 +49,7 @@ export default function HospitalListScreen({
     <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Pressable
-            style={styles.backButton}
-            onPress={() => router.back()}
-            accessibilityLabel="Go back"
-          >
-            <LeftArrowIcon size={16} color="#383838" />
-          </Pressable>
+          <BackButton onPress={() => router.back()} iconSize={8} />
         </View>
 
         <Text style={styles.title}>{title}</Text>
@@ -118,14 +114,6 @@ const styles = StyleSheet.create({
   header: {
     paddingTop: 8,
     marginBottom: 8,
-  },
-  backButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "#FFFFFF",
-    alignItems: "center",
-    justifyContent: "center",
   },
   title: {
     fontSize: 28,

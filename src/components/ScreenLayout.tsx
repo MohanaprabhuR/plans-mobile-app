@@ -6,13 +6,14 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Edge, SafeAreaView } from "react-native-safe-area-context";
 
 type Props = {
   children: ReactNode;
   scrollable?: boolean;
   style?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
+  edges?: Edge[];
 };
 
 export default function ScreenLayout({
@@ -20,9 +21,10 @@ export default function ScreenLayout({
   scrollable = true,
   style,
   contentContainerStyle,
+  edges,
 }: Props) {
   return (
-    <SafeAreaView style={[styles.safeArea, style]}>
+    <SafeAreaView style={[styles.safeArea, style]} edges={edges}>
       {scrollable ? (
         <ScrollView
           contentContainerStyle={[

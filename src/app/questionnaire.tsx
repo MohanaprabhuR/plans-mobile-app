@@ -1,4 +1,4 @@
-import LeftArrowIcon from "@/components/icons/LeftArrowIcon";
+import BackButton from "@/components/BackButton";
 import ScreenLayout from "@/components/ScreenLayout";
 import { router } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -152,9 +152,7 @@ export default function QuestionnaireScreen() {
   return (
     <ScreenLayout scrollable={false} style={styles.screen}>
       <View style={styles.header}>
-        <Pressable style={styles.backButton} onPress={handleBack}>
-          <LeftArrowIcon color="#383838" />
-        </Pressable>
+        <BackButton onPress={handleBack} />
         <Text style={styles.sectionLabel}>{step.section}</Text>
         <Text style={styles.stepCount}>
           {questionIndex + 1}/{currentSection.questions.length}
@@ -293,19 +291,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingTop: 8,
     paddingBottom: 12,
-  },
-  backButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "#FFFFFF",
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#383838",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
   },
   sectionLabel: {
     fontSize: 15,

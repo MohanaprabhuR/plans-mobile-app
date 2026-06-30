@@ -1,5 +1,5 @@
 import Button from "@/components/Button";
-import LeftArrowIcon from "@/components/icons/LeftArrowIcon";
+import BackButton from "@/components/BackButton";
 import ScreenLayout from "@/components/ScreenLayout";
 import { router } from "expo-router";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
@@ -9,13 +9,7 @@ const profileAccount = () => {
   return (
     <ScreenLayout>
       <View style={styles.backButtonContainer}>
-        <Pressable
-          style={styles.backButton}
-          onPress={() => router.back()}
-          accessibilityLabel="Go back"
-        >
-          <LeftArrowIcon color="#383838" />
-        </Pressable>
+        <BackButton onPress={() => router.back()} />
       </View>
       <View style={styles.container}>
         <Image source={successImage} style={styles.successimage} />
@@ -49,16 +43,6 @@ const styles = StyleSheet.create({
   backButtonContainer: {
     paddingVertical: 8,
     paddingHorizontal: 16,
-  },
-
-  backButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 20,
-    backgroundColor: "#FFFFFF",
-    alignItems: "center",
-    justifyContent: "center",
-    boxShadow: "0px 2px 4px 0px rgba(56, 56, 56, 0.08)",
   },
 
   title: {

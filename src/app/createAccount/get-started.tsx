@@ -10,7 +10,7 @@ import {
 } from "react-native";
 
 import Button from "@/components/Button";
-import LeftArrowIcon from "@/components/icons/LeftArrowIcon";
+import BackButton from "@/components/BackButton";
 import ScreenLayout from "@/components/ScreenLayout";
 import { useEffect, useRef, useState } from "react";
 const PlaceholderImage = require("../../../assets/images/plans-logo.png");
@@ -38,13 +38,7 @@ export default function GetStarted() {
   return (
     <ScreenLayout>
       <View style={styles.backButtonContainer}>
-        <Pressable
-          style={styles.backButton}
-          onPress={() => router.back()}
-          accessibilityLabel="Go back"
-        >
-          <LeftArrowIcon color="#383838" />
-        </Pressable>
+        <BackButton onPress={() => router.back()} />
       </View>
       <View style={styles.container}>
         <Animated.View
@@ -93,15 +87,6 @@ const styles = StyleSheet.create({
   image: {
     width: 44,
     height: 44,
-  },
-  backButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 20,
-    backgroundColor: "#FFFFFF",
-    alignItems: "center",
-    justifyContent: "center",
-    boxShadow: "0px 2px 4px 0px rgba(56, 56, 56, 0.08)",
   },
   title: {
     color: "#383838",

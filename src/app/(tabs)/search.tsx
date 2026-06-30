@@ -1,10 +1,11 @@
 import { StyleSheet, Text, View } from "react-native";
 
 import ScreenLayout from "@/components/ScreenLayout";
+import { TAB_SCREEN_EDGES } from "@/constants/tabScreen";
 
 export default function SearchScreen() {
   return (
-    <ScreenLayout contentContainerStyle={styles.container}>
+    <ScreenLayout contentContainerStyle={styles.container} edges={TAB_SCREEN_EDGES}>
       <Text style={styles.title}>Search</Text>
       <Text style={styles.subtitle}>Search your policies and claims.</Text>
     </ScreenLayout>

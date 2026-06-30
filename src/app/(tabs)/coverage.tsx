@@ -1,10 +1,11 @@
 import { StyleSheet, Text, View } from "react-native";
 
 import ScreenLayout from "@/components/ScreenLayout";
+import { TAB_SCREEN_EDGES } from "@/constants/tabScreen";
 
 export default function CoverageScreen() {
   return (
-    <ScreenLayout contentContainerStyle={styles.container}>
+    <ScreenLayout contentContainerStyle={styles.container} edges={TAB_SCREEN_EDGES}>
       <Text style={styles.title}>Coverage</Text>
       <Text style={styles.subtitle}>Your coverage details will appear here.</Text>
     </ScreenLayout>
