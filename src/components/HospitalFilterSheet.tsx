@@ -1,5 +1,5 @@
 import { Feather } from "@expo/vector-icons";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Dimensions,
   Modal,
@@ -8,18 +8,18 @@ import {
   Text,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
   DISTANCE_OPTIONS,
   DistanceFilter,
   HospitalFilters,
   RATING_OPTIONS,
-  countActiveFilters,
   defaultHospitalFilters,
   filtersAreEqual,
 } from "@/constants/hospitalFilters";
 
-const SHEET_HEIGHT = Dimensions.get("window").height * 0.72;
+const SHEET_HEIGHT = Dimensions.get("window").height * 0.58;
 
 type HospitalFilterSheetProps = {
   visible: boolean;
@@ -36,17 +36,19 @@ export default function HospitalFilterSheet({
   onClose,
   onApply,
 }: HospitalFilterSheetProps) {
+  const insets = useSafeAreaInsets();
   const [draftFilters, setDraftFilters] =
     useState<HospitalFilters>(appliedFilters);
-  const [expandedSection, setExpandedSection] =
-    useState<ExpandedSection>(null);
+  const [expandedSection, setExpandedSection] = useState<ExpandedSection>(null);
+  const [prevVisible, setPrevVisible] = useState(visible);
 
-  useEffect(() => {
+  if (visible !== prevVisible) {
+    setPrevVisible(visible);
     if (visible) {
       setDraftFilters(appliedFilters);
       setExpandedSection(null);
     }
-  }, [visible, appliedFilters]);
+  }
 
   const hasSelections =
     draftFilters.distance !== null || draftFilters.ratings.length > 0;
@@ -91,16 +93,24 @@ export default function HospitalFilterSheet({
       visible={visible}
       transparent
       animationType="slide"
+      statusBarTranslucent
       onRequestClose={onClose}
     >
       <View style={styles.overlay}>
         <Pressable style={styles.backdrop} onPress={onClose} />
-        <View style={styles.sheet}>
+
+        <View
+          style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, 24) }]}
+        >
           <View style={styles.handle} />
 
           <View style={styles.header}>
-            <Pressable onPress={onClose} hitSlop={8}>
-              <Feather name="x" size={20} color="#383838" />
+            <Pressable
+              onPress={onClose}
+              style={styles.closeButton}
+              accessibilityLabel="Close filters"
+            >
+              <Feather name="x" size={16} color="#383838" />
             </Pressable>
             <Text style={styles.title}>Filters</Text>
             <Pressable onPress={handleReset} hitSlop={8}>
@@ -116,8 +126,12 @@ export default function HospitalFilterSheet({
               >
                 <Text style={styles.sectionTitle}>Distance</Text>
                 <Feather
-                  name={expandedSection === "distance" ? "chevron-up" : "chevron-down"}
-                  size={18}
+                  name={
+                    expandedSection === "distance"
+                      ? "chevron-up"
+                      : "chevron-down"
+                  }
+                  size={20}
                   color="#383838"
                 />
               </Pressable>
@@ -132,15 +146,17 @@ export default function HospitalFilterSheet({
                         style={styles.optionRow}
                         onPress={() => selectDistance(option.value)}
                       >
+                        <Text style={styles.optionLabel}>{option.label}</Text>
                         <View
                           style={[
                             styles.radioOuter,
                             selected && styles.radioOuterSelected,
                           ]}
                         >
-                          {selected ? <View style={styles.radioInner} /> : null}
+                          {selected ? (
+                            <Feather name="check" size={12} color="#FFFFFF" />
+                          ) : null}
                         </View>
-                        <Text style={styles.optionLabel}>{option.label}</Text>
                       </Pressable>
                     );
                   })}
@@ -155,8 +171,12 @@ export default function HospitalFilterSheet({
               >
                 <Text style={styles.sectionTitle}>Ratings</Text>
                 <Feather
-                  name={expandedSection === "ratings" ? "chevron-up" : "chevron-down"}
-                  size={18}
+                  name={
+                    expandedSection === "ratings"
+                      ? "chevron-up"
+                      : "chevron-down"
+                  }
+                  size={20}
                   color="#383838"
                 />
               </Pressable>
@@ -164,13 +184,16 @@ export default function HospitalFilterSheet({
               {expandedSection === "ratings" ? (
                 <View style={styles.options}>
                   {RATING_OPTIONS.map((option) => {
-                    const selected = draftFilters.ratings.includes(option.value);
+                    const selected = draftFilters.ratings.includes(
+                      option.value,
+                    );
                     return (
                       <Pressable
                         key={option.label}
                         style={styles.optionRow}
                         onPress={() => toggleRating(option.value)}
                       >
+                        <Text style={styles.optionLabel}>{option.label}</Text>
                         <View
                           style={[
                             styles.checkboxOuter,
@@ -181,7 +204,6 @@ export default function HospitalFilterSheet({
                             <Feather name="check" size={12} color="#FFFFFF" />
                           ) : null}
                         </View>
-                        <Text style={styles.optionLabel}>{option.label}</Text>
                       </Pressable>
                     );
                   })}
@@ -198,17 +220,7 @@ export default function HospitalFilterSheet({
             disabled={!canApply}
             onPress={handleApply}
           >
-            <Text
-              style={[
-                styles.applyText,
-                canApply ? styles.applyTextActive : styles.applyTextDisabled,
-              ]}
-            >
-              Apply Filters
-              {countActiveFilters(draftFilters) > 0
-                ? ` (${countActiveFilters(draftFilters)})`
-                : ""}
-            </Text>
+            <Text style={styles.applyText}>Apply Filters</Text>
           </Pressable>
         </View>
       </View>
@@ -220,18 +232,17 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     justifyContent: "flex-end",
+    backgroundColor: "rgba(56, 56, 56, 0.5)",
   },
   backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(56, 56, 56, 0.45)",
+    ...StyleSheet.absoluteFill,
   },
   sheet: {
-    height: SHEET_HEIGHT,
+    minHeight: SHEET_HEIGHT,
     backgroundColor: "#FFFFFF",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingHorizontal: 16,
-    paddingBottom: 24,
   },
   handle: {
     alignSelf: "center",
@@ -246,37 +257,45 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 20,
+    marginBottom: 8,
+  },
+  closeButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#383838",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
   },
   title: {
-    fontSize: 16,
+    fontSize: 15,
     lineHeight: 24,
-    fontWeight: "700",
+    fontWeight: "600",
     color: "#383838",
   },
   resetText: {
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 24,
     fontWeight: "600",
     color: "#FF5E00",
   },
   sections: {
     flex: 1,
-    gap: 12,
   },
   section: {
-    borderWidth: 1,
-    borderColor: "#EDEDED",
-    borderRadius: 16,
-    overflow: "hidden",
+    borderBottomWidth: 1,
+    borderBottomColor: "#EDEDED",
   },
   sectionHeader: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    backgroundColor: "#FFFFFF",
+    paddingVertical: 16,
   },
   sectionTitle: {
     fontSize: 15,
@@ -285,27 +304,24 @@ const styles = StyleSheet.create({
     color: "#383838",
   },
   options: {
-    borderTopWidth: 1,
-    borderTopColor: "#EDEDED",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingBottom: 8,
     gap: 4,
   },
   optionRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
-    paddingVertical: 10,
+    justifyContent: "space-between",
+    paddingVertical: 12,
   },
   optionLabel: {
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 24,
     color: "#383838",
   },
   radioOuter: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
     borderWidth: 2,
     borderColor: "#D4D2CD",
     alignItems: "center",
@@ -313,16 +329,11 @@ const styles = StyleSheet.create({
   },
   radioOuterSelected: {
     borderColor: "#FF5E00",
-  },
-  radioInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
     backgroundColor: "#FF5E00",
   },
   checkboxOuter: {
-    width: 20,
-    height: 20,
+    width: 22,
+    height: 22,
     borderRadius: 6,
     borderWidth: 2,
     borderColor: "#D4D2CD",
@@ -334,11 +345,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#FF5E00",
   },
   applyButton: {
-    borderRadius: 16,
+    borderRadius: 32,
     paddingVertical: 16,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 16,
+    marginTop: 24,
   },
   applyButtonActive: {
     backgroundColor: "#FF5E00",
@@ -350,12 +361,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 24,
     fontWeight: "600",
-  },
-  applyTextActive: {
     color: "#FFFFFF",
-  },
-  applyTextDisabled: {
-    color: "#FFFFFF",
-    opacity: 0.8,
   },
 });

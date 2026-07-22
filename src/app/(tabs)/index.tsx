@@ -31,7 +31,16 @@ const SLIDE_HEIGHT = CARD_HEIGHT + 16 + ACTIONS_HEIGHT;
 function PolicySlide({ item }: { item: (typeof activePolicyCards)[number] }) {
   return (
     <View style={styles.slide}>
-      <PolicyCard item={item} style={styles.carouselCard} />
+      <Pressable
+        onPress={() =>
+          router.push({
+            pathname: "/(tabs)/policies",
+            params: { policyId: item.id },
+          })
+        }
+      >
+        <PolicyCard item={item} style={styles.carouselCard} />
+      </Pressable>
       <View style={styles.actionsRow}>
         {item.actions.map((action) => (
           <Pressable

@@ -1,4 +1,4 @@
-import { Feather } from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { Hospital } from "@/constants/hospitalData";
@@ -9,9 +9,7 @@ type HospitalCardProps = {
 
 export default function HospitalCard({ hospital }: HospitalCardProps) {
   const handleDirections = () => {
-    const query = encodeURIComponent(
-      `${hospital.name}, ${hospital.address}`,
-    );
+    const query = encodeURIComponent(`${hospital.name}, ${hospital.address}`);
     Linking.openURL(`https://maps.google.com/?q=${query}`);
   };
 
@@ -22,14 +20,16 @@ export default function HospitalCard({ hospital }: HospitalCardProps) {
   return (
     <View style={styles.card}>
       <View style={styles.topRow}>
-        <Text style={styles.name}>{hospital.name}</Text>
+        <View style={styles.nameContainer}>
+          <Text style={styles.name}>{hospital.name}</Text>
+          <Text style={styles.distance}>{hospital.distance} Miles Away</Text>
+        </View>
         <View style={styles.ratingRow}>
-          <Feather name="star" size={14} color="#FF5E00" />
+          <Ionicons name="star" size={12} color="#FF5E00" />
           <Text style={styles.ratingText}>{hospital.rating.toFixed(1)}</Text>
         </View>
       </View>
 
-      <Text style={styles.distance}>{hospital.distance} Miles Away</Text>
       <Text style={styles.address}>{hospital.address}</Text>
 
       <View style={styles.actionsRow}>
@@ -49,12 +49,10 @@ export default function HospitalCard({ hospital }: HospitalCardProps) {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#EDEDED",
+    borderRadius: 32,
     padding: 16,
-    gap: 8,
-    boxShadow: "0px 2px 4px 0px rgba(56, 56, 56, 0.06)",
+    gap: 16,
+    boxShadow: "0px 20px -10px 0px rgba(56, 56, 56, 0.15)",
   },
   topRow: {
     flexDirection: "row",
@@ -62,51 +60,58 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 12,
   },
+  nameContainer: {
+    flexDirection: "column",
+    gap: 4,
+  },
   name: {
-    flex: 1,
-    fontSize: 15,
+    fontSize: 18,
     lineHeight: 24,
-    fontWeight: "700",
+    fontWeight: "600",
     color: "#383838",
+    letterSpacing: -0.5,
   },
   ratingRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    gap: 2,
+    backgroundColor: "#FFF7ED",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 50,
   },
   ratingText: {
     fontSize: 14,
-    lineHeight: 20,
+    lineHeight: 16,
     fontWeight: "600",
-    color: "#383838",
+    color: "#FF5E00",
   },
   distance: {
     fontSize: 13,
-    lineHeight: 16,
+    lineHeight: 20,
     fontWeight: "500",
-    color: "#383838",
+    color: "#555555",
   },
   address: {
-    fontSize: 13,
-    lineHeight: 18,
-    color: "#757575",
-    marginBottom: 8,
+    fontSize: 14,
+    lineHeight: 24,
+    color: "#555555",
   },
   actionsRow: {
     flexDirection: "row",
-    gap: 10,
+    gap: 8,
   },
   actionButton: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 6,
     borderWidth: 1,
     borderColor: "#EDEDED",
-    borderRadius: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 8,
+    borderRadius: 32,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    boxShadow: "0px 1px 2px 0px rgba(56, 56, 56, 0.09)",
   },
   actionText: {
     fontSize: 12,

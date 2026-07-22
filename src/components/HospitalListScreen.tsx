@@ -8,7 +8,7 @@ import {
   defaultHospitalFilters,
 } from "@/constants/hospitalFilters";
 import { filterHospitals } from "@/utils/filterHospitals";
-import { Feather } from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
 import {
@@ -65,7 +65,7 @@ export default function HospitalListScreen({
             placeholderTextColor="#9CA3AF"
             style={styles.searchInput}
           />
-          <Feather name="search" size={18} color="#757575" />
+          <Ionicons name="search" size={24} color="#757575" />
         </View>
 
         <FlatList
@@ -75,7 +75,6 @@ export default function HospitalListScreen({
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
-          ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
         />
 
         <Pressable
@@ -121,10 +120,12 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#383838",
     marginBottom: 4,
+    letterSpacing: -0.5,
   },
   subtitle: {
-    fontSize: 13,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 25,
+    fontWeight: "600",
     color: "#757575",
     marginBottom: 16,
   },
@@ -136,24 +137,23 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: "#EDEDED",
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
     marginBottom: 16,
+    boxShadow: "0px 1px 2px 0px rgba(56, 56, 56, 0.09)",
   },
   searchInput: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 15,
     lineHeight: 20,
-    color: "#383838",
+    color: "#757575",
     padding: 0,
   },
   listContent: {
-    paddingBottom: 100,
-    gap: 12,
+    paddingBottom: 40,
+    gap: 16,
   },
-  listSeparator: {
-    height: 12,
-  },
+
   filterFab: {
     position: "absolute",
     right: 16,
@@ -164,7 +164,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#383838",
     alignItems: "center",
     justifyContent: "center",
-    boxShadow: "0px 4px 12px 0px rgba(56, 56, 56, 0.2)",
   },
   filterBadge: {
     position: "absolute",

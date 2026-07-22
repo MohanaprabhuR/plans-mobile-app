@@ -81,6 +81,7 @@ export default function RiskScreen() {
   const [index, setIndex] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const carouselRef = useRef<ICarouselInstance>(null);
+  const isAnimatingRef = useRef(false);
   const isLastSlide = index === slides.length - 1;
 
   const handleNext = () => {
@@ -88,7 +89,11 @@ export default function RiskScreen() {
       setShowModal(true);
       return;
     }
-    carouselRef.current?.scrollTo({ index: index + 1, animated: true });
+    if (isAnimatingRef.current) return;
+    isAnimatingRef.current = true;
+    const nextIndex = index + 1;
+    setIndex(nextIndex);
+    carouselRef.current?.scrollTo({ index: nextIndex, animated: true });
   };
 
   const handleContinue = () => {
@@ -97,9 +102,10 @@ export default function RiskScreen() {
   };
 
   const goToSlide = (slideIndex: number) => {
-    if (slideIndex === index) return;
-    carouselRef.current?.scrollTo({ index: slideIndex, animated: true });
+    if (slideIndex === index || isAnimatingRef.current) return;
+    isAnimatingRef.current = true;
     setIndex(slideIndex);
+    carouselRef.current?.scrollTo({ index: slideIndex, animated: true });
   };
 
   return (
@@ -119,7 +125,11 @@ export default function RiskScreen() {
           data={slides}
           loop={false}
           pagingEnabled
-          onSnapToItem={setIndex}
+          scrollAnimationDuration={300}
+          onSnapToItem={(snapIndex) => {
+            isAnimatingRef.current = false;
+            setIndex(snapIndex);
+          }}
           renderItem={({ item }) => (
             <View style={styles.slide}>
               <View style={styles.imageCard}>
@@ -192,7 +202,7 @@ export default function RiskScreen() {
                 Risks are a Part of Life But You Can be Prepared
               </Text>
               <Text style={styles.modalSubtitle}>
-                Let's check how prepared you are in key areas
+                Let&apos;s check how prepared you are in key areas
               </Text>
 
               <View style={styles.shieldContainer}>
@@ -201,7 +211,7 @@ export default function RiskScreen() {
             </View>
 
             <Text style={styles.modalNote}>
-              This is not to scare you, it's to help you stay prepared.
+              This is not to scare you, it&apos;s to help you stay prepared.
             </Text>
             <View style={{ width: "100%", paddingHorizontal: 16 }}>
               <Pressable style={styles.continueButton} onPress={handleContinue}>
