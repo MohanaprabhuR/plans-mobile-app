@@ -127,7 +127,12 @@ export default function HomeScreen() {
           </View>
         </View>
       </View>
-      <View style={styles.riskCardPressable}>
+      <Pressable
+        style={styles.riskCardPressable}
+        onPress={() => router.push("/risk-overview")}
+        accessibilityRole="button"
+        accessibilityLabel="Open risk overview"
+      >
         <LinearGradient
           colors={["#383838", "#707070"]}
           locations={[0.15, 0.65]}
@@ -144,7 +149,7 @@ export default function HomeScreen() {
           </View>
           <Feather name="arrow-right" size={20} color="#FFFFFF" />
         </LinearGradient>
-      </View>
+      </Pressable>
       <View style={styles.quickActionsSection}>
         <Text style={styles.quickActionsTitle}>Quick Actions</Text>
         <View style={styles.quickActionsCard}>
