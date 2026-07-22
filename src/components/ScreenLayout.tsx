@@ -50,5 +50,6 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
+    minHeight: 0,
   },
 });

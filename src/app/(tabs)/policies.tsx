@@ -83,7 +83,16 @@ export default function PolicyScreen() {
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
-          <PolicyCard item={item} style={styles.card} />
+          <Pressable
+            onPress={() =>
+              router.push({
+                pathname: "/policy-details",
+                params: { policyId: item.id },
+              })
+            }
+          >
+            <PolicyCard item={item} style={styles.card} />
+          </Pressable>
         )}
         ListEmptyComponent={
           <Text style={styles.emptyText}>
