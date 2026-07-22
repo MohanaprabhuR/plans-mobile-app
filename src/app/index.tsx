@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/refs -- RN Animated.Value refs are read during render by design */
 import { Image } from "expo-image";
 import { useEffect, useRef } from "react";
 import { Animated, StyleSheet, Text, View } from "react-native";
@@ -26,7 +27,7 @@ export default function WelcomeScreen() {
         useNativeDriver: true,
       }),
     ]).start();
-  }, []);
+  }, [fadeAnim, scaleAnim]);
   return (
     <ScreenLayout>
       <View style={styles.container}>

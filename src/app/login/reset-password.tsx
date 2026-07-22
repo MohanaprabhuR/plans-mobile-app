@@ -25,7 +25,7 @@ export default function LoginScreen() {
   const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(""));
   const [password, setPassword] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
-  const otpRefs = useRef<Array<TextInput | null>>([]);
+  const otpRefs = useRef<(TextInput | null)[]>([]);
 
   const isEmailFilled = email.trim().length > 0;
   const isOtpFilled = otp.every((digit) => digit.length === 1);

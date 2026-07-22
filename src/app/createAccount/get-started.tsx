@@ -1,8 +1,8 @@
+/* eslint-disable react-hooks/refs -- RN Animated.Value refs are read during render by design */
 import { router } from "expo-router";
 import {
   Animated,
   Image,
-  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -34,7 +34,7 @@ export default function GetStarted() {
         useNativeDriver: true,
       }),
     ]).start();
-  }, []);
+  }, [fadeAnim, scaleAnim]);
   return (
     <ScreenLayout>
       <View style={styles.backButtonContainer}>

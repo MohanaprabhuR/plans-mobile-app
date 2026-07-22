@@ -2,10 +2,10 @@ import Button from "@/components/Button";
 import BackButton from "@/components/BackButton";
 import ScreenLayout from "@/components/ScreenLayout";
 import { router } from "expo-router";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 const successImage = require("../../../assets/images/success.png");
 
-const profileAccount = () => {
+const AccountSuccess = () => {
   return (
     <ScreenLayout>
       <View style={styles.backButtonContainer}>
@@ -30,7 +30,7 @@ const profileAccount = () => {
   );
 };
 
-export default profileAccount;
+export default AccountSuccess;
 
 const styles = StyleSheet.create({
   container: {

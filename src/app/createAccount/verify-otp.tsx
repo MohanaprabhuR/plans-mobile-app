@@ -1,7 +1,7 @@
 import BackButton from "@/components/BackButton";
 import ScreenLayout from "@/components/ScreenLayout";
 import { router } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   Alert,
   Pressable,
@@ -11,9 +11,10 @@ import {
   View,
 } from "react-native";
 
-const verifyOtp = () => {
+const VerifyOtp = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const inputRefs = useRef<TextInput[]>([]);
+
   const handleChange = (text: string, index: number) => {
     const updatedOtp = [...otp];
     updatedOtp[index] = text;
@@ -26,13 +27,9 @@ const verifyOtp = () => {
     if (!text && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
-  };
 
-  const isFilled = otp.every((digit) => digit !== "");
-
-  useEffect(() => {
-    if (isFilled) {
-      const enteredOtp = otp.join("");
+    if (updatedOtp.every((digit) => digit !== "")) {
+      const enteredOtp = updatedOtp.join("");
 
       // Example valid OTP
       if (enteredOtp === "123456") {
@@ -41,13 +38,11 @@ const verifyOtp = () => {
         }, 300);
       } else {
         Alert.alert("Invalid OTP");
-
         setOtp(["", "", "", "", "", ""]);
-
         inputRefs.current[0]?.focus();
       }
     }
-  }, [otp]);
+  };
   return (
     <ScreenLayout>
       <View style={styles.backButtonContainer}>
@@ -96,7 +91,7 @@ const verifyOtp = () => {
   );
 };
 
-export default verifyOtp;
+export default VerifyOtp;
 
 const styles = StyleSheet.create({
   container: {

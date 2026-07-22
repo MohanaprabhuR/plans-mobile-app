@@ -70,13 +70,6 @@ const slides = [
   },
 ];
 
-const categoryIcons = [
-  { icon: "heartbeat" as const, color: "#F9B233" },
-  { icon: "car" as const, color: "#8B5CF6" },
-  { icon: "home" as const, color: "#0EA5E9" },
-  { icon: "users" as const, color: "#EC4899" },
-];
-
 export default function RiskScreen() {
   const [index, setIndex] = useState(0);
   const [showModal, setShowModal] = useState(false);

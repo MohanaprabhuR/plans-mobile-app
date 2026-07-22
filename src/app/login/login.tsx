@@ -61,7 +61,7 @@ export default function LoginScreen() {
                 },
               ]}
             >
-              I don't know my password
+              I don’t know my password
             </Text>
           )}
         </Pressable>

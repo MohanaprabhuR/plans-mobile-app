@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/refs -- RN Animated.Value refs are read during render by design */
 import ScreenLayout from "@/components/ScreenLayout";
 import { router } from "expo-router";
 import { useEffect, useRef } from "react";
@@ -20,7 +21,7 @@ export default function RiskLoadingScreen() {
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [rotation]);
 
   const rotate = rotation.interpolate({
     inputRange: [0, 1],
@@ -36,7 +37,7 @@ export default function RiskLoadingScreen() {
       </Animated.View>
 
       <Text style={styles.subtext}>
-        We'll ask a few quick questions to{"\n"}
+        We’ll ask a few quick questions to{"\n"}
         identify areas where you may need{"\n"}
         better protection.
       </Text>

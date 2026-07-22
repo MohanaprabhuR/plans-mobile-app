@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/refs -- RN Animated.Value refs are read during render by design */
 import BackButton from "@/components/BackButton";
 import ScreenLayout from "@/components/ScreenLayout";
 import { router } from "expo-router";

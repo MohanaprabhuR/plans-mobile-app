@@ -66,7 +66,7 @@ export default function RiskCategory() {
     <ScreenLayout contentContainerStyle={styles.screen}>
       <View style={styles.header}>
         <Text style={styles.tag}>Risk Categories</Text>
-        <Text style={styles.title}>We'll Check Your Risks into 2 Areas</Text>
+        <Text style={styles.title}>We’ll Check Your Risks into 2 Areas</Text>
       </View>
 
       <Image source={gaugeImage} style={styles.gauge} resizeMode="contain" />

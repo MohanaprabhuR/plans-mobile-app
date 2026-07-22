@@ -1,23 +1,36 @@
-import * as LucideIcons from "lucide-react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { StyleSheet, Text, View } from "react-native";
 import { RiskItem } from "../constants/riskData";
 
-// Convert kebab-case to PascalCase: 'dollar-sign' → 'DollarSign'
-function toPascalCase(str: string): string {
-  return str
-    .split("-")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join("");
-}
+// Maps riskData icon names to MaterialCommunityIcons glyphs.
+const ICON_MAP: Record<string, keyof typeof MaterialCommunityIcons.glyphMap> = {
+  heart: "heart",
+  activity: "run",
+  "dollar-sign": "currency-usd",
+  coffee: "coffee",
+  users: "account-group",
+  map: "map",
+  "piggy-bank": "piggy-bank",
+  "credit-card": "credit-card",
+  accessibility: "wheelchair-accessibility",
+  car: "car",
+  home: "home",
+  smartphone: "cellphone",
+  flame: "fire",
+  droplets: "water",
+  lock: "lock",
+  gem: "diamond-stone",
+  wrench: "wrench",
+  shield: "shield",
+};
 
 export default function RiskCell({ item }: { item: RiskItem }) {
-  const iconName = toPascalCase(item.icon) as keyof typeof LucideIcons;
-  const IconComponent = LucideIcons[iconName] as React.ElementType;
+  const iconName = ICON_MAP[item.icon] ?? "help-circle";
 
   return (
     <View style={styles.cell}>
       <View style={styles.iconCircle}>
-        {IconComponent && <IconComponent size={20} color="#E8863C" />}
+        <MaterialCommunityIcons name={iconName} size={20} color="#E8863C" />
       </View>
       <Text style={styles.label}>{item.label}</Text>
     </View>

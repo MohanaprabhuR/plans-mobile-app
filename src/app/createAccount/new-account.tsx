@@ -3,9 +3,9 @@ import BackButton from "@/components/BackButton";
 import ScreenLayout from "@/components/ScreenLayout";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 
-const newAccount = () => {
+const NewAccount = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mobile, setMobile] = useState("");
@@ -79,7 +79,7 @@ const newAccount = () => {
   );
 };
 
-export default newAccount;
+export default NewAccount;
 
 const styles = StyleSheet.create({
   container: {

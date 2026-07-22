@@ -1,6 +1,5 @@
 import { Image, StyleSheet, Text, View } from "react-native";
 
-import { getCategoryColor } from "@/constants/categoryColors";
 import { ClaimCardData, claimStatusColors } from "@/constants/dashboardData";
 
 type ClaimCardProps = {
@@ -15,8 +14,6 @@ const categoryLabels: Record<ClaimCardData["category"], string> = {
 };
 
 export default function ClaimCard({ item }: ClaimCardProps) {
-  const footerColor = getCategoryColor(item.category);
-
   return (
     <View style={styles.card}>
       <View style={styles.content}>

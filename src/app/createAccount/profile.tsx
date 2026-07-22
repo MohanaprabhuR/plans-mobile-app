@@ -3,9 +3,9 @@ import BackButton from "@/components/BackButton";
 import ScreenLayout from "@/components/ScreenLayout";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 
-const profileAccount = () => {
+const ProfileAccount = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
@@ -88,7 +88,7 @@ const profileAccount = () => {
   );
 };
 
-export default profileAccount;
+export default ProfileAccount;
 
 const styles = StyleSheet.create({
   container: {

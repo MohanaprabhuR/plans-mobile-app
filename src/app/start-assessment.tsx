@@ -12,9 +12,9 @@ export default function StartAssessment() {
         style={{ width: 295, height: 295, marginTop: 80, marginBottom: 40 }}
       />
       <View style={styles.content}>
-        <Text style={styles.title}>Let's Build Your Risk Profile</Text>
+        <Text style={styles.title}>Let’s Build Your Risk Profile</Text>
         <Text style={styles.subtitle}>
-          Answer a few quick questions. We'll show where you may be at risk.
+          Answer a few quick questions. We’ll show where you may be at risk.
         </Text>
       </View>
       <View style={styles.footer}>
