@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   Image,
   Modal,
@@ -11,12 +11,13 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 
+import { fetchPolicyDetail } from "@/api/insuranceApi";
 import BackButton from "@/components/BackButton";
 import KnowYourCoverageSheet from "@/components/KnowYourCoverageSheet";
+import LoadingView from "@/components/LoadingView";
 import ScreenLayout from "@/components/ScreenLayout";
 import { TAB_SCREEN_EDGES } from "@/constants/tabScreen";
-import { policyCards } from "@/constants/policyData";
-import { policyDetails } from "@/constants/policyDetails";
+import { useApi } from "@/hooks/useApi";
 
 type TabKey = "overview" | "coverage";
 type CoverageFilter = "covered" | "notCovered";
@@ -30,13 +31,15 @@ export default function PolicyDetailsScreen() {
     filter: CoverageFilter;
   }>({ visible: false, filter: "covered" });
 
-  const policy = useMemo(
-    () => policyCards.find((item) => item.id === policyId),
-    [policyId],
-  );
-  const detail = policyId ? policyDetails[policyId] : undefined;
+  const {
+    data: bundle,
+    loading,
+    error,
+  } = useApi(() => fetchPolicyDetail(policyId ?? ""), [policyId], {
+    enabled: Boolean(policyId),
+  });
 
-  if (!policy || !detail) {
+  if (loading || error || !bundle) {
     return (
       <ScreenLayout style={styles.screen} edges={TAB_SCREEN_EDGES}>
         <View style={styles.header}>
@@ -44,10 +47,16 @@ export default function PolicyDetailsScreen() {
           <Text style={styles.title}>Policy Details</Text>
           <View style={styles.headerSpacer} />
         </View>
-        <Text style={styles.emptyText}>Policy not found.</Text>
+        {loading ? (
+          <LoadingView error={error} />
+        ) : (
+          <Text style={styles.emptyText}>{error ?? "Policy not found."}</Text>
+        )}
       </ScreenLayout>
     );
   }
+
+  const { policy, detail } = bundle;
 
   const overviewRows: [string, string][] = [
     ["Proposer Name", detail.proposerName],

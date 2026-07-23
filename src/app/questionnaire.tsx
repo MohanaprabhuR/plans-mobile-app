@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/refs -- RN Animated.Value refs are read during render by design */
+import { submitQuestionnaire } from "@/api/insuranceApi";
 import BackButton from "@/components/BackButton";
 import ScreenLayout from "@/components/ScreenLayout";
 import { router } from "expo-router";
@@ -96,6 +97,8 @@ export default function QuestionnaireScreen() {
       setCurrentStep((prev) => prev + 1);
       return;
     }
+    // Fire-and-forget: persist the answers via the API before leaving.
+    submitQuestionnaire(answers).catch(() => {});
     router.replace("/(tabs)");
   }
 

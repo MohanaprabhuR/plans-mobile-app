@@ -12,10 +12,10 @@ import {
 import { Feather } from "@expo/vector-icons";
 import * as DocumentPicker from "expo-document-picker";
 
+import { askPolicyAssistant } from "@/api/insuranceApi";
 import ScreenLayout from "@/components/ScreenLayout";
 import { TAB_SCREEN_EDGES } from "@/constants/tabScreen";
 import {
-  getAssistantReply,
   suggestedQuestions,
   uploadCompleteMessage,
   uploadedPolicyQuickQuestions,
@@ -32,7 +32,6 @@ type UploadedFile = {
   sizeLabel: string;
 };
 
-const REPLY_DELAY_MS = 900;
 const MAX_FILE_BYTES = 25 * 1024 * 1024;
 
 function formatBytes(bytes: number): string {
@@ -50,14 +49,13 @@ export default function SearchScreen() {
   const [uploadError, setUploadError] = useState<string | null>(null);
 
   const scrollRef = useRef<ScrollView>(null);
-  const replyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const messageIdRef = useRef(0);
+  const mountedRef = useRef(true);
 
   useEffect(() => {
+    mountedRef.current = true;
     return () => {
-      if (replyTimeoutRef.current) {
-        clearTimeout(replyTimeoutRef.current);
-      }
+      mountedRef.current = false;
     };
   }, []);
 
@@ -74,7 +72,7 @@ export default function SearchScreen() {
     return `msg-${messageIdRef.current}`;
   };
 
-  const sendMessage = (rawText: string) => {
+  const sendMessage = async (rawText: string) => {
     const text = rawText.trim();
     if (!text || isTyping) return;
 
@@ -82,14 +80,28 @@ export default function SearchScreen() {
     setInput("");
     setIsTyping(true);
 
-    replyTimeoutRef.current = setTimeout(() => {
-      replyTimeoutRef.current = null;
+    try {
+      const { reply } = await askPolicyAssistant(text);
+      if (!mountedRef.current) return;
       setMessages((prev) => [
         ...prev,
-        { id: nextId(), role: "assistant", text: getAssistantReply(text) },
+        { id: nextId(), role: "assistant", text: reply },
       ]);
-      setIsTyping(false);
-    }, REPLY_DELAY_MS);
+    } catch {
+      if (!mountedRef.current) return;
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: nextId(),
+          role: "assistant",
+          text: "Sorry, something went wrong. Please try again.",
+        },
+      ]);
+    } finally {
+      if (mountedRef.current) {
+        setIsTyping(false);
+      }
+    }
   };
 
   const handleUpload = async () => {

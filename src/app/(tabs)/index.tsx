@@ -1,10 +1,12 @@
+import { fetchDashboard } from "@/api/insuranceApi";
 import ClaimCard from "@/components/ClaimCard";
+import LoadingView from "@/components/LoadingView";
 import PolicyCard from "@/components/PolicyCard";
 import ScreenLayout from "@/components/ScreenLayout";
 import { getCategoryColor } from "@/constants/categoryColors";
-import { premiumOverview, recentClaims } from "@/constants/dashboardData";
-import { activePolicyCards } from "@/constants/policyData";
+import { PolicyCardData } from "@/constants/policyData";
 import { TAB_SCREEN_EDGES } from "@/constants/tabScreen";
+import { useApi } from "@/hooks/useApi";
 import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
@@ -28,7 +30,7 @@ const CARD_HEIGHT = 190;
 const ACTIONS_HEIGHT = 88;
 const SLIDE_HEIGHT = CARD_HEIGHT + 16 + ACTIONS_HEIGHT;
 
-function PolicySlide({ item }: { item: (typeof activePolicyCards)[number] }) {
+function PolicySlide({ item }: { item: PolicyCardData }) {
   return (
     <View style={styles.slide}>
       <Pressable
@@ -60,11 +62,27 @@ function PolicySlide({ item }: { item: (typeof activePolicyCards)[number] }) {
 export default function HomeScreen() {
   const [activeIndex, setActiveIndex] = useState(0);
   const carouselRef = useRef<ICarouselInstance>(null);
+  const { data: dashboard, loading, error } = useApi(fetchDashboard, []);
 
   const goToSlide = (index: number) => {
     carouselRef.current?.scrollTo({ index, animated: true });
     setActiveIndex(index);
   };
+
+  if (loading || error || !dashboard) {
+    return (
+      <ScreenLayout
+        style={styles.screen}
+        contentContainerStyle={styles.content}
+        edges={TAB_SCREEN_EDGES}
+      >
+        <LoadingView error={error} />
+      </ScreenLayout>
+    );
+  }
+
+  const { activePolicies, premiumOverview, recentClaims, riskSummary } =
+    dashboard;
 
   return (
     <ScreenLayout
@@ -105,14 +123,14 @@ export default function HomeScreen() {
             ref={carouselRef}
             width={CARD_WIDTH}
             height={SLIDE_HEIGHT}
-            data={activePolicyCards}
+            data={activePolicies}
             loop={true}
             onSnapToItem={setActiveIndex}
             renderItem={({ item }) => <PolicySlide item={item} />}
           />
 
           <View style={styles.pagination}>
-            {activePolicyCards.map((card, index) => (
+            {activePolicies.map((card, index) => (
               <Pressable key={card.id} onPress={() => goToSlide(index)}>
                 <View
                   style={[
@@ -141,11 +159,11 @@ export default function HomeScreen() {
           style={styles.riskCard}
         >
           <View style={styles.riskScoreBadge}>
-            <Text style={styles.riskScoreText}>35</Text>
+            <Text style={styles.riskScoreText}>{riskSummary.score}</Text>
           </View>
           <View style={styles.riskTextWrap}>
             <Text style={styles.riskTitle}>Risk Overview</Text>
-            <Text style={styles.riskSubtitle}>Medium</Text>
+            <Text style={styles.riskSubtitle}>{riskSummary.label}</Text>
           </View>
           <Feather name="arrow-right" size={20} color="#FFFFFF" />
         </LinearGradient>

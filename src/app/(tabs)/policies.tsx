@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
+import { fetchPolicies } from "@/api/insuranceApi";
 import BackButton from "@/components/BackButton";
+import LoadingView from "@/components/LoadingView";
 import PolicyCard from "@/components/PolicyCard";
 import ScreenLayout from "@/components/ScreenLayout";
 import { TAB_SCREEN_EDGES } from "@/constants/tabScreen";
-import { policyCards } from "@/constants/policyData";
+import { useApi } from "@/hooks/useApi";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 
@@ -14,8 +16,9 @@ type StatusFilter = "active" | "inactive";
 export default function PolicyScreen() {
   const [status, setStatus] = useState<StatusFilter>("active");
   const [hintVisible, setHintVisible] = useState(true);
+  const { data: policies, loading, error } = useApi(fetchPolicies, []);
 
-  const filteredPolicies = policyCards.filter(
+  const filteredPolicies = (policies ?? []).filter(
     (policy) => policy.status === status,
   );
 
@@ -77,29 +80,33 @@ export default function PolicyScreen() {
         </View>
       ) : null}
 
-      <FlatList
-        data={filteredPolicies}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-        renderItem={({ item }) => (
-          <Pressable
-            onPress={() =>
-              router.push({
-                pathname: "/policy-details",
-                params: { policyId: item.id },
-              })
-            }
-          >
-            <PolicyCard item={item} style={styles.card} />
-          </Pressable>
-        )}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>
-            No {status} policies to show.
-          </Text>
-        }
-      />
+      {loading || error ? (
+        <LoadingView error={error} />
+      ) : (
+        <FlatList
+          data={filteredPolicies}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item }) => (
+            <Pressable
+              onPress={() =>
+                router.push({
+                  pathname: "/policy-details",
+                  params: { policyId: item.id },
+                })
+              }
+            >
+              <PolicyCard item={item} style={styles.card} />
+            </Pressable>
+          )}
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>
+              No {status} policies to show.
+            </Text>
+          }
+        />
+      )}
     </ScreenLayout>
   );
 }

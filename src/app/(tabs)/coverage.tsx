@@ -15,25 +15,29 @@ import Svg, {
   Stop,
 } from "react-native-svg";
 
+import { fetchCoverageReport } from "@/api/insuranceApi";
 import BackButton from "@/components/BackButton";
+import LoadingView from "@/components/LoadingView";
 import ScreenLayout from "@/components/ScreenLayout";
 import { TAB_SCREEN_EDGES } from "@/constants/tabScreen";
 import {
   CoverageGapCategory,
   RiskGroup,
-  coverageGapCategories,
 } from "@/constants/coverageScoreData";
-import {
-  coverageScore,
-  getCoverageScoreBand,
-} from "@/constants/riskOverviewData";
+import { CoverageScoreBand } from "@/constants/riskOverviewData";
+import { useApi } from "@/hooks/useApi";
 
 const GAUGE_SIZE = 220;
 const GAUGE_STROKE = 14;
 const GAUGE_RADIUS = (GAUGE_SIZE - GAUGE_STROKE) / 2;
 
-function ScoreGauge() {
-  const band = getCoverageScoreBand(coverageScore);
+function ScoreGauge({
+  score,
+  band,
+}: {
+  score: number;
+  band: CoverageScoreBand;
+}) {
 
   return (
     <View style={styles.gaugeWrap}>
@@ -56,7 +60,7 @@ function ScoreGauge() {
         />
       </Svg>
       <View style={styles.gaugeInner}>
-        <Text style={styles.gaugeScore}>{coverageScore}</Text>
+        <Text style={styles.gaugeScore}>{score}</Text>
         <Text style={styles.gaugeOutOf}>Out of 100</Text>
         <Text style={[styles.gaugeBand, { color: band.color }]}>
           {band.label}
@@ -135,8 +139,26 @@ function GapCategoryCard({ category }: { category: CoverageGapCategory }) {
 
 export default function CoverageScreen() {
   const [group, setGroup] = useState<RiskGroup>("personal");
+  const { data, loading, error } = useApi(fetchCoverageReport, []);
 
-  const categories = coverageGapCategories.filter(
+  if (loading || error || !data) {
+    return (
+      <ScreenLayout
+        scrollable={false}
+        contentContainerStyle={styles.screen}
+        edges={TAB_SCREEN_EDGES}
+      >
+        <View style={styles.header}>
+          <BackButton onPress={() => router.back()} />
+          <Text style={styles.headerTitle}>Coverage Score</Text>
+          <View style={styles.headerSpacer} />
+        </View>
+        <LoadingView error={error} />
+      </ScreenLayout>
+    );
+  }
+
+  const categories = data.gapCategories.filter(
     (category) => category.group === group,
   );
 
@@ -157,7 +179,7 @@ export default function CoverageScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <ScoreGauge />
+        <ScoreGauge score={data.score} band={data.band} />
 
         <View style={styles.messagePill}>
           <Text style={styles.messageText}>

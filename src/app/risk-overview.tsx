@@ -12,15 +12,13 @@ import {
 import { Feather, FontAwesome5 } from "@expo/vector-icons";
 import { router } from "expo-router";
 
+import { fetchRiskOverview } from "@/api/insuranceApi";
 import BackButton from "@/components/BackButton";
+import LoadingView from "@/components/LoadingView";
 import ScreenLayout from "@/components/ScreenLayout";
 import { TAB_SCREEN_EDGES } from "@/constants/tabScreen";
-import {
-  RiskCategory,
-  RiskItem,
-  riskCategories,
-  totalRiskCount,
-} from "@/constants/riskOverviewData";
+import { RiskCategory, RiskItem } from "@/constants/riskOverviewData";
+import { useApi } from "@/hooks/useApi";
 
 if (
   Platform.OS === "android" &&
@@ -123,11 +121,27 @@ function CategoryCard({
 
 export default function RiskOverviewScreen() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const { data, loading, error } = useApi(fetchRiskOverview, []);
 
   const toggleCategory = (categoryId: string) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setExpandedId((current) => (current === categoryId ? null : categoryId));
   };
+
+  if (loading || error || !data) {
+    return (
+      <ScreenLayout
+        scrollable={false}
+        contentContainerStyle={styles.screen}
+        edges={TAB_SCREEN_EDGES}
+      >
+        <View style={styles.header}>
+          <BackButton onPress={() => router.back()} />
+        </View>
+        <LoadingView error={error} />
+      </ScreenLayout>
+    );
+  }
 
   return (
     <ScreenLayout
@@ -140,14 +154,14 @@ export default function RiskOverviewScreen() {
       </View>
 
       <Text style={styles.title}>Risk Overview</Text>
-      <Text style={styles.subtitle}>{totalRiskCount} Risk Found</Text>
+      <Text style={styles.subtitle}>{data.totalRiskCount} Risk Found</Text>
 
       <ScrollView
         style={styles.scroll}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
       >
-        {riskCategories.map((category) => (
+        {data.categories.map((category) => (
           <CategoryCard
             key={category.id}
             category={category}
