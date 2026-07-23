@@ -1,15 +1,22 @@
+/* eslint-disable react-hooks/refs -- Animated.Value + PanResponder refs are read by RN during render by design */
 import { Feather } from "@expo/vector-icons";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
+  Animated,
   Dimensions,
+  LayoutAnimation,
   Modal,
+  PanResponder,
+  Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
+  UIManager,
   View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { useSafeAreaInsets } from "@/lib/safe-area";
 import {
   DISTANCE_OPTIONS,
   DistanceFilter,
@@ -19,7 +26,16 @@ import {
   filtersAreEqual,
 } from "@/constants/hospitalFilters";
 
-const SHEET_HEIGHT = Dimensions.get("window").height * 0.58;
+if (
+  Platform.OS === "android" &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
+const SCREEN_HEIGHT = Dimensions.get("window").height;
+const SHEET_HEIGHT = SCREEN_HEIGHT * 0.58;
+const DISMISS_DISTANCE = SHEET_HEIGHT * 0.22;
 
 type HospitalFilterSheetProps = {
   visible: boolean;
@@ -40,15 +56,132 @@ export default function HospitalFilterSheet({
   const [draftFilters, setDraftFilters] =
     useState<HospitalFilters>(appliedFilters);
   const [expandedSection, setExpandedSection] = useState<ExpandedSection>(null);
+  const [rendered, setRendered] = useState(visible);
   const [prevVisible, setPrevVisible] = useState(visible);
+
+  const [translateY] = useState(() => new Animated.Value(SHEET_HEIGHT));
+  const [backdropOpacity] = useState(() => new Animated.Value(0));
+  const dragOriginY = useRef(0);
+  const sheetY = useRef(SHEET_HEIGHT);
+  const closingRef = useRef(false);
+  const onCloseRef = useRef(onClose);
+  const onApplyRef = useRef(onApply);
+
+  onCloseRef.current = onClose;
+  onApplyRef.current = onApply;
 
   if (visible !== prevVisible) {
     setPrevVisible(visible);
     if (visible) {
+      setRendered(true);
       setDraftFilters(appliedFilters);
       setExpandedSection(null);
+      closingRef.current = false;
+      sheetY.current = SHEET_HEIGHT;
+      translateY.setValue(SHEET_HEIGHT);
+      backdropOpacity.setValue(0);
     }
   }
+
+  useEffect(() => {
+    if (!visible) return;
+
+    Animated.parallel([
+      Animated.spring(translateY, {
+        toValue: 0,
+        damping: 24,
+        stiffness: 260,
+        mass: 0.7,
+        useNativeDriver: true,
+      }),
+      Animated.timing(backdropOpacity, {
+        toValue: 1,
+        duration: 220,
+        useNativeDriver: true,
+      }),
+    ]).start(({ finished }) => {
+      if (finished) {
+        sheetY.current = 0;
+      }
+    });
+  }, [visible, translateY, backdropOpacity]);
+
+  const animateClose = useRef((afterClose?: () => void) => {
+    if (closingRef.current) return;
+    closingRef.current = true;
+
+    Animated.parallel([
+      Animated.timing(translateY, {
+        toValue: SHEET_HEIGHT,
+        duration: 220,
+        useNativeDriver: true,
+      }),
+      Animated.timing(backdropOpacity, {
+        toValue: 0,
+        duration: 220,
+        useNativeDriver: true,
+      }),
+    ]).start(({ finished }) => {
+      if (!finished) {
+        closingRef.current = false;
+        return;
+      }
+      sheetY.current = SHEET_HEIGHT;
+      setRendered(false);
+      afterClose?.();
+      onCloseRef.current();
+      closingRef.current = false;
+    });
+  }).current;
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: (_, gesture) =>
+        Math.abs(gesture.dy) > 4 &&
+        Math.abs(gesture.dy) >= Math.abs(gesture.dx),
+      onPanResponderTerminationRequest: () => false,
+      onShouldBlockNativeResponder: () => true,
+      onPanResponderGrant: () => {
+        dragOriginY.current = sheetY.current;
+      },
+      onPanResponderMove: (_, gesture) => {
+        const next = Math.max(
+          0,
+          Math.min(SHEET_HEIGHT, dragOriginY.current + gesture.dy),
+        );
+        sheetY.current = next;
+        translateY.setValue(next);
+      },
+      onPanResponderRelease: (_, gesture) => {
+        const current = Math.max(
+          0,
+          Math.min(SHEET_HEIGHT, dragOriginY.current + gesture.dy),
+        );
+        sheetY.current = current;
+        translateY.setValue(current);
+
+        const shouldDismiss = current > DISMISS_DISTANCE || gesture.vy > 1.1;
+
+        if (shouldDismiss) {
+          animateClose();
+          return;
+        }
+
+        Animated.spring(translateY, {
+          toValue: 0,
+          damping: 24,
+          stiffness: 260,
+          mass: 0.7,
+          useNativeDriver: true,
+        }).start(({ finished }) => {
+          if (finished) {
+            sheetY.current = 0;
+          }
+        });
+      },
+    }),
+  ).current;
 
   const hasSelections =
     draftFilters.distance !== null || draftFilters.ratings.length > 0;
@@ -56,6 +189,7 @@ export default function HospitalFilterSheet({
   const canApply = hasSelections || hasChanges;
 
   const toggleSection = (section: ExpandedSection) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setExpandedSection((current) => (current === section ? null : section));
   };
 
@@ -79,46 +213,75 @@ export default function HospitalFilterSheet({
   };
 
   const handleReset = () => {
-    onApply(defaultHospitalFilters);
-    onClose();
+    onApplyRef.current(defaultHospitalFilters);
+    animateClose();
   };
 
   const handleApply = () => {
-    onApply(draftFilters);
-    onClose();
+    onApplyRef.current(draftFilters);
+    animateClose();
   };
+
+  if (!rendered) {
+    return null;
+  }
 
   return (
     <Modal
-      visible={visible}
+      visible={rendered}
       transparent
-      animationType="slide"
+      animationType="none"
       statusBarTranslucent
-      onRequestClose={onClose}
+      onRequestClose={() => animateClose()}
     >
       <View style={styles.overlay}>
-        <Pressable style={styles.backdrop} onPress={onClose} />
+        <Animated.View style={[styles.backdrop, { opacity: backdropOpacity }]}>
+          <Pressable
+            style={StyleSheet.absoluteFill}
+            onPress={() => animateClose()}
+          />
+        </Animated.View>
 
-        <View
-          style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, 24) }]}
+        <Animated.View
+          style={[
+            styles.sheet,
+            {
+              paddingBottom: Math.max(insets.bottom, 24),
+              transform: [{ translateY }],
+            },
+          ]}
         >
-          <View style={styles.handle} />
+          <View style={styles.dragRegion} {...panResponder.panHandlers}>
+            <View style={styles.handle} />
+          </View>
 
           <View style={styles.header}>
             <Pressable
-              onPress={onClose}
+              onPress={() => animateClose()}
               style={styles.closeButton}
               accessibilityLabel="Close filters"
             >
               <Feather name="x" size={16} color="#383838" />
             </Pressable>
             <Text style={styles.title}>Filters</Text>
-            <Pressable onPress={handleReset} hitSlop={8}>
+            <Pressable
+              onPress={handleReset}
+              hitSlop={8}
+              style={styles.resetButton}
+              accessibilityLabel="Reset filters"
+            >
               <Text style={styles.resetText}>Reset</Text>
             </Pressable>
           </View>
 
-          <View style={styles.sections}>
+          <ScrollView
+            style={styles.sectionsScroll}
+            contentContainerStyle={styles.sections}
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+            keyboardShouldPersistTaps="handled"
+            nestedScrollEnabled
+          >
             <View style={styles.section}>
               <Pressable
                 style={styles.sectionHeader}
@@ -145,6 +308,8 @@ export default function HospitalFilterSheet({
                         key={option.label}
                         style={styles.optionRow}
                         onPress={() => selectDistance(option.value)}
+                        accessibilityRole="radio"
+                        accessibilityState={{ selected }}
                       >
                         <Text style={styles.optionLabel}>{option.label}</Text>
                         <View
@@ -192,6 +357,8 @@ export default function HospitalFilterSheet({
                         key={option.label}
                         style={styles.optionRow}
                         onPress={() => toggleRating(option.value)}
+                        accessibilityRole="checkbox"
+                        accessibilityState={{ checked: selected }}
                       >
                         <Text style={styles.optionLabel}>{option.label}</Text>
                         <View
@@ -210,7 +377,7 @@ export default function HospitalFilterSheet({
                 </View>
               ) : null}
             </View>
-          </View>
+          </ScrollView>
 
           <Pressable
             style={[
@@ -222,7 +389,7 @@ export default function HospitalFilterSheet({
           >
             <Text style={styles.applyText}>Apply Filters</Text>
           </Pressable>
-        </View>
+        </Animated.View>
       </View>
     </Modal>
   );
@@ -232,26 +399,29 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "rgba(56, 56, 56, 0.5)",
   },
   backdrop: {
     ...StyleSheet.absoluteFill,
+    backgroundColor: "rgba(56, 56, 56, 0.5)",
   },
   sheet: {
-    minHeight: SHEET_HEIGHT,
+    height: SHEET_HEIGHT,
     backgroundColor: "#FFFFFF",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingHorizontal: 16,
   },
+  dragRegion: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: 10,
+    paddingBottom: 14,
+  },
   handle: {
-    alignSelf: "center",
     width: 40,
     height: 4,
     borderRadius: 2,
     backgroundColor: "#D4D2CD",
-    marginTop: 12,
-    marginBottom: 16,
   },
   header: {
     flexDirection: "row",
@@ -273,10 +443,20 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   title: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    textAlign: "center",
     fontSize: 15,
     lineHeight: 24,
     fontWeight: "600",
     color: "#383838",
+    pointerEvents: "none",
+  },
+  resetButton: {
+    minWidth: 32,
+    alignItems: "flex-end",
+    justifyContent: "center",
   },
   resetText: {
     fontSize: 15,
@@ -284,8 +464,12 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#FF5E00",
   },
-  sections: {
+  sectionsScroll: {
     flex: 1,
+  },
+  sections: {
+    paddingBottom: 8,
+    flexGrow: 1,
   },
   section: {
     borderBottomWidth: 1,
@@ -349,7 +533,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 24,
+    marginTop: 16,
   },
   applyButtonActive: {
     backgroundColor: "#FF5E00",

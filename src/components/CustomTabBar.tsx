@@ -1,7 +1,7 @@
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { ReactNode } from "react";
 import { Dimensions, Pressable, StyleSheet, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "@/lib/safe-area";
 
 const TAB_BAR_HEIGHT = 64;
 const ACTIVE_COLOR = "#FF5E00";

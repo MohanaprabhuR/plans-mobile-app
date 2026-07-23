@@ -20,7 +20,9 @@ export function filterHospitals(
   }
 
   if (filters.distance) {
-    result = result.filter((hospital) => hospital.distance <= filters.distance!);
+    result = result.filter(
+      (hospital) => hospital.distance <= filters.distance!,
+    );
   }
 
   if (filters.ratings.length > 0) {
@@ -29,5 +31,5 @@ export function filterHospitals(
     );
   }
 
-  return result;
+  return [...result].sort((a, b) => a.distance - b.distance);
 }

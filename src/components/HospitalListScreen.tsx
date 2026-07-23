@@ -19,7 +19,7 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView } from "@/lib/safe-area";
 
 type HospitalListScreenProps = {
   title: string;
@@ -64,6 +64,7 @@ export default function HospitalListScreen({
             placeholder="Search Hospitals"
             placeholderTextColor="#9CA3AF"
             style={styles.searchInput}
+            returnKeyType="search"
           />
           <Ionicons name="search" size={24} color="#757575" />
         </View>
@@ -75,6 +76,14 @@ export default function HospitalListScreen({
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
+          ListEmptyComponent={
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyTitle}>No hospitals found</Text>
+              <Text style={styles.emptySubtitle}>
+                Try adjusting your search or filters
+              </Text>
+            </View>
+          }
         />
 
         <Pressable
@@ -146,14 +155,33 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     lineHeight: 20,
-    color: "#757575",
+    color: "#383838",
     padding: 0,
   },
   listContent: {
-    paddingBottom: 40,
+    paddingBottom: 96,
     gap: 16,
+    flexGrow: 1,
   },
-
+  emptyState: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 24,
+    gap: 8,
+  },
+  emptyTitle: {
+    fontSize: 17,
+    lineHeight: 24,
+    fontWeight: "600",
+    color: "#383838",
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: "#757575",
+    textAlign: "center",
+  },
   filterFab: {
     position: "absolute",
     right: 16,

@@ -3,18 +3,10 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@/components/ui/*": [
-        "./src/components/ui/*"
-      ],
-      "@/assets/*": [
-        "./assets/*"
-      ],
-      "tailwind.config": [
-        "./tailwind.config.js"
-      ]
+      "@/*": ["./src/*"],
+      "@/components/ui/*": ["./src/components/ui/*"],
+      "@/assets/*": ["./assets/*"],
+      "tailwind.config": ["./tailwind.config.js"]
     }
   },
   "include": [
@@ -24,8 +16,5 @@
     "expo-env.d.ts",
     "nativewind-env.d.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "example"
-  ]
+  "exclude": ["node_modules", "example"]
 }

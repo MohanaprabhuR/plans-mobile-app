@@ -18,7 +18,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "@/lib/safe-area";
 
 import { PolicyDetail } from "@/constants/policyDetails";
 

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import {
+  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -33,6 +34,7 @@ type UploadedFile = {
 };
 
 const MAX_FILE_BYTES = 25 * 1024 * 1024;
+const USER_AVATAR = "https://mockmind-api.uifaces.co/content/human/80.jpg";
 
 function formatBytes(bytes: number): string {
   if (bytes >= 1024 * 1024) {
@@ -242,55 +244,48 @@ export default function SearchScreen() {
             </>
           ) : (
             <View style={styles.messages}>
-              {messages.map((message) => (
-                <View
-                  key={message.id}
-                  style={[
-                    styles.bubble,
-                    message.role === "user"
-                      ? styles.bubbleUser
-                      : styles.bubbleAssistant,
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.bubbleText,
-                      message.role === "user" && styles.bubbleTextUser,
-                    ]}
-                  >
-                    {message.text}
-                  </Text>
-                </View>
-              ))}
+              {messages.map((message) =>
+                message.role === "user" ? (
+                  <View key={message.id} style={styles.userRow}>
+                    <View style={[styles.bubble, styles.bubbleUser]}>
+                      <Text style={styles.bubbleText}>{message.text}</Text>
+                    </View>
+                    <Image
+                      source={{ uri: USER_AVATAR }}
+                      style={styles.userAvatar}
+                    />
+                  </View>
+                ) : (
+                  <View key={message.id} style={styles.assistantRow}>
+                    <View style={styles.assistantAvatar}>
+                      <Feather name="zap" size={13} color="#FFFFFF" />
+                    </View>
+                    <View style={[styles.bubble, styles.bubbleAssistant]}>
+                      <Text style={styles.bubbleText}>{message.text}</Text>
+                    </View>
+                  </View>
+                ),
+              )}
 
               {isTyping ? (
-                <View style={[styles.bubble, styles.bubbleAssistant]}>
-                  <Text style={styles.typingText}>Typing…</Text>
+                <View style={styles.assistantRow}>
+                  <View style={styles.assistantAvatar}>
+                    <Feather name="zap" size={13} color="#FFFFFF" />
+                  </View>
+                  <View style={[styles.bubble, styles.bubbleAssistant]}>
+                    <Text style={styles.typingText}>Typing…</Text>
+                  </View>
                 </View>
               ) : null}
             </View>
           )}
         </ScrollView>
 
-        {uploadedFile ? (
-          <View style={styles.quickChipsRow}>
-            {uploadedPolicyQuickQuestions.map((question) => (
-              <Pressable
-                key={question}
-                style={styles.quickChip}
-                onPress={() => sendMessage(question)}
-              >
-                <Text style={styles.quickChipText}>{question}</Text>
-              </Pressable>
-            ))}
-          </View>
-        ) : null}
-
         <View style={styles.inputBar}>
           <TextInput
             value={input}
             onChangeText={setInput}
-            placeholder="Ask about your policies"
+            placeholder="Ask your question"
             placeholderTextColor="#9CA3AF"
             style={styles.input}
             returnKeyType="send"
@@ -308,6 +303,20 @@ export default function SearchScreen() {
             <Feather name="arrow-up" size={18} color="#FFFFFF" />
           </Pressable>
         </View>
+
+        {uploadedFile ? (
+          <View style={styles.quickChipsRow}>
+            {uploadedPolicyQuickQuestions.map((question) => (
+              <Pressable
+                key={question}
+                style={styles.quickChip}
+                onPress={() => sendMessage(question)}
+              >
+                <Text style={styles.quickChipText}>{question}</Text>
+              </Pressable>
+            ))}
+          </View>
+        ) : null}
       </KeyboardAvoidingView>
     </ScreenLayout>
   );
@@ -485,31 +494,53 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   messages: {
-    gap: 10,
+    gap: 14,
+  },
+  userRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "flex-end",
+    gap: 8,
+  },
+  userAvatar: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+  },
+  assistantRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 8,
+  },
+  assistantAvatar: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: "#383838",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 2,
   },
   bubble: {
-    maxWidth: "85%",
+    maxWidth: "78%",
     borderRadius: 16,
     paddingHorizontal: 14,
     paddingVertical: 10,
   },
   bubbleUser: {
-    alignSelf: "flex-end",
-    backgroundColor: "#FF5E00",
-    borderBottomRightRadius: 4,
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#EDEDED",
+    borderTopRightRadius: 4,
   },
   bubbleAssistant: {
-    alignSelf: "flex-start",
     backgroundColor: "#FFFFFF",
-    borderBottomLeftRadius: 4,
+    borderTopLeftRadius: 4,
   },
   bubbleText: {
     fontSize: 14,
     lineHeight: 21,
     color: "#383838",
-  },
-  bubbleTextUser: {
-    color: "#FFFFFF",
   },
   typingText: {
     fontSize: 14,
@@ -522,7 +553,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     gap: 8,
     paddingHorizontal: 16,
-    paddingTop: 8,
+    paddingBottom: 8,
   },
   quickChip: {
     backgroundColor: "#FFFFFF",

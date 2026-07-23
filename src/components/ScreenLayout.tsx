@@ -6,7 +6,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { Edge, SafeAreaView } from "react-native-safe-area-context";
+import { Edge, SafeAreaView } from "@/lib/safe-area";
 
 type Props = {
   children: ReactNode;

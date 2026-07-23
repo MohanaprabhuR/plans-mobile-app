@@ -20,16 +20,14 @@ export default function HospitalCard({ hospital }: HospitalCardProps) {
   return (
     <View style={styles.card}>
       <View style={styles.topRow}>
-        <View style={styles.nameContainer}>
-          <Text style={styles.name}>{hospital.name}</Text>
-          <Text style={styles.distance}>{hospital.distance} Miles Away</Text>
-        </View>
+        <Text style={styles.name}>{hospital.name}</Text>
         <View style={styles.ratingRow}>
           <Ionicons name="star" size={12} color="#FF5E00" />
           <Text style={styles.ratingText}>{hospital.rating.toFixed(1)}</Text>
         </View>
       </View>
 
+      <Text style={styles.distance}>{hospital.distance} Miles Away</Text>
       <Text style={styles.address}>{hospital.address}</Text>
 
       <View style={styles.actionsRow}>
@@ -51,7 +49,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 32,
     padding: 16,
-    gap: 16,
+    gap: 8,
     boxShadow: "0px 20px -10px 0px rgba(56, 56, 56, 0.15)",
   },
   topRow: {
@@ -60,11 +58,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 12,
   },
-  nameContainer: {
-    flexDirection: "column",
-    gap: 4,
-  },
   name: {
+    flex: 1,
     fontSize: 18,
     lineHeight: 24,
     fontWeight: "600",
@@ -96,6 +91,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 24,
     color: "#555555",
+    marginBottom: 8,
   },
   actionsRow: {
     flexDirection: "row",
