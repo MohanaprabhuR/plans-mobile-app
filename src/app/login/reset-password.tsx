@@ -198,7 +198,9 @@ export default function LoginScreen() {
               style={styles.modalButton}
               onPress={() => {
                 setShowSuccess(false);
-                router.push("/login/login");
+                // Return to the login screen we came from instead of
+                // stacking a duplicate login screen.
+                router.back();
               }}
             />
           </View>

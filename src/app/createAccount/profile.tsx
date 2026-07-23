@@ -45,7 +45,6 @@ const ProfileAccount = () => {
           <View>
             <Text style={styles.label}>Last Name</Text>
             <TextInput
-              autoFocus
               autoCapitalize="none"
               value={lastName}
               onChangeText={setLastName}
@@ -59,7 +58,6 @@ const ProfileAccount = () => {
           <View>
             <Text style={styles.label}>Date of Birth</Text>
             <TextInput
-              autoFocus
               autoCapitalize="none"
               value={dateOfBirth}
               onChangeText={setDateOfBirth}

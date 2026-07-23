@@ -40,7 +40,6 @@ const NewAccount = () => {
           <View>
             <Text style={styles.label}>Password</Text>
             <TextInput
-              autoFocus
               autoCapitalize="none"
               value={password}
               onChangeText={setPassword}
@@ -55,11 +54,10 @@ const NewAccount = () => {
           <View>
             <Text style={styles.label}>Mobile Number</Text>
             <TextInput
-              autoFocus
               autoCapitalize="none"
               value={mobile}
               onChangeText={setMobile}
-              keyboardType="default"
+              keyboardType="phone-pad"
               returnKeyType="done"
               placeholder="Enter Mobile Number"
               placeholderTextColor="#999999"
